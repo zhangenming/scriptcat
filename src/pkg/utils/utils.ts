@@ -76,10 +76,18 @@ export function dealScript(source: string): string {
 }
 
 export function isFirefox() {
-  if (navigator.userAgent.indexOf("Firefox") >= 0) {
-    return true;
+  return navigator.userAgent.indexOf("Firefox") >= 0;
+}
+
+export function isOrion() {
+  try {
+    // @ts-ignore
+    return (navigator.userAgentData as any[]).brands.some((brand) => {
+      return brand.brand === "Orion" && brand.version;
+    });
+  } catch {
+    return false;
   }
-  return false;
 }
 
 export function InfoNotification(title: string, msg: string) {
@@ -268,6 +276,9 @@ export function errorMsg(e: any): string {
 export function isUserScriptsAvailable() {
   try {
     // Method call which throws if API permission or toggle is not enabled.
+    if (isOrion()) {
+      return true;
+    }
     chrome.userScripts.getScripts();
     return true;
   } catch {
